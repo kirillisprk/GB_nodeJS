@@ -9,42 +9,31 @@ const crl = rl.createInterface({
     input: fs.createReadStream(LOG_FILE),
 });
 
-let arrayWriter = [];
+let objWriter = [];
 
-createWriteStream = (ip) => {
-    return fs.createWriteStream(`./file/${ip}_requests.log`, {
+createWriteStream = (name) => {
+    return fs.createWriteStream(`./file/${name}_requests.log`, {
         encoding: 'utf8',
         flag: 'a'
     })
 }
 
 FILTER_IP_LIST.forEach((element) => {
-    arrayWriter.push(createWriteStream(element));
+    objWriter[element] = createWriteStream(element);
 });
 
 crl.on('line', (line) => {
         const ipLine = line.match(ipRegex());
         if (line) {
-            switch (ipLine[0]) {
-                case FILTER_IP_LIST[0]: {
-                    arrayWriter[0].write(line + '\n');
-                    break;
+            FILTER_IP_LIST.forEach((element => {
+                if (ipLine.includes(element)) {
+                    objWriter[element].write(line + '\n');
                 }
-                case FILTER_IP_LIST[1]: {
-                    arrayWriter[1].write(line + '\n');
-                    break;
-                }
-                default: {
-                    break;
-                }
-
-            }
-
+            }))
         }
     }
 ).on('close', () => {
     console.log('Finished');
     process.exit(0);
 });
-
 
