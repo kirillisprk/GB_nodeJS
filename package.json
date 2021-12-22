@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/kirillisprk/GB_nodeJS#readme",
   "dependencies": {
-    "colors": "^1.4.0"
+    "colors": "^1.4.0",
+    "ip-regex": "^4.3.0",
+    "luxon": "^2.2.0"
   }
 }
