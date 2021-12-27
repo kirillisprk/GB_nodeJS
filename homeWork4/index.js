@@ -26,7 +26,7 @@ const searchInfile = (fileName, keyword) => {
             }
         }
     ).on('close', () => {
-        console.log('Найдено совподений:', resultSearch)
+        console.log('Найдено совпадений:', resultSearch)
         process.exit(0);
     });
 };
@@ -52,13 +52,13 @@ const cli = (directory) => {
             {
                 name: 'keyword',
                 type: 'input',
-                message: 'Введите слово или фарзу для поиска:'
+                message: 'Введите слово или фразу для поиска:'
             }
         ])
         .then((answer) => {
             console.log("В файле:", answer.fileName)
             searchInfile(answer.fileName, answer.keyword);
-        });
+        })
 }
 
 const checkPath = async () => {
