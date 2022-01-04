@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+	      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Socket</title>
+	<script src="https://cdn.socket.io/4.4.0/socket.io.min.js"
+	        integrity="sha384-1fOn6VtTq3PWwfsOrk45LnYcGosJwzMHv+Xh/Jx5303FVOXzEnw0EpLv30mtjmlj"
+	        crossorigin="anonymous"></script>
+</head>
+<body>
+
+<label for="userName"></label>
+<input id="userName" type="text" placeholder="user name" autofocus/>
+<button id="sendName">sendName</button>
+<br>
+<br>
+<label for="input"></label>
+<input id="input" type="text"/>
+<button id="button">send</button>
+<div id="messages"></div>
+<br>
+<br>
+<div id="log"></div>
+<br>
+<br>
+<div id="countBlock"></div>
+<br>
+<br>
+<div id="listBlock"></div>
+
+<script>
+	const URL = 'http://localhost:3000/'
+	const socket = io(URL);
+
+	const messagesBlock = document.querySelector('#messages');
+	const logBlock = document.querySelector('#log');
+	const countBlock = document.querySelector('#countBlock');
+	const listBlock = document.querySelector('#listBlock');
+	const sendButton = document.querySelector('#button');
+	const input = document.querySelector('#input');
+	const userName = document.querySelector('#userName');
+	const sendName = document.querySelector('#sendName');
+
+	socket.on('connect', () => {
+		console.log('connect', URL);
+
+	});
+	sendName.addEventListener('click', () => {
+		socket.emit('set-name', userName.value);
+	})
+	sendButton.addEventListener('click', () => {
+		const data = {
+			message: input.value,
+		};
+		socket.emit('client-message', data);
+		input.value = '';
+	})
+
+	socket.on('server-message', data => {
+		messagesBlock.insertAdjacentHTML('afterbegin', `<div>${data.id}:</div><div>${data.message}</div>`);
+
+	});
+	socket.on('changed-name', data => {
+		logBlock.insertAdjacentHTML('afterbegin', `<div>changed-name:</div><div>${data.id} = ${data.auth}</div>`);
+	});
+	socket.on('disconnect-client', data => {
+		logBlock.insertAdjacentHTML('afterbegin', `<div>disconnect:</div><div>${data.id}</div>`);
+		countBlock.innerHTML = `<div>count User:</div><div>${data.count}</div>`;
+		listBlock.innerHTML = `<div>Users:</div><div>${data.list}</div>`;
+		console.log(data)
+	});
+	socket.on('reconnect-client', data => {
+		logBlock.insertAdjacentHTML('afterbegin', `<div>reconnect:</div><div>${data}</div>`);
+	});
+	socket.on('connect-client', data => {
+		logBlock.insertAdjacentHTML('afterbegin', `<div>connect:</div><div>${data.id}</div>`);
+		countBlock.innerHTML = `<div>count User:</div><div>${data.count}</div>`;
+		listBlock.innerHTML = `<div>Users:</div><div>${data.list}</div>`;
+		console.log(data)
+	});
+
+</script>
+</body>
+</html>
